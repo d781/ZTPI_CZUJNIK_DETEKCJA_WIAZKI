@@ -1,10 +1,12 @@
 import numpy as np
 class Point():
     """Opis punktu"""
-    def __init__(self, nr='', x=0, y=0, xw=0, yw=0, vx=0, vy=0):
+    def __init__(self, nr='', x=0, y=0,xx=0, yy=0, xw=0, yw=0, vx=0, vy=0):
         self.nr = nr
         self.x = x
         self.y = y
+        self.xx = xx
+        self.yy = yy
         self.xw = xw
         self.yw = yw
         self.vx = vx
@@ -68,7 +70,8 @@ def par_w2(P,W):
     msrvx = np.sqrt(svx/(len(vx)-1))
     msrvy = np.sqrt(svy/(len(vy)-1))
     for i, p in enumerate(P):
-        tmp = Point(p.nr, p.x, p.y, Xx[i], Xy[i], vx[i], vy[i])
+        w = szukaj(p.nr, W)
+        tmp = Point(p.nr, p.x, p.y, w.x, w.y, Xx[i], Xy[i], vx[i], vy[i])
         wtorne.append(tmp)
     return dX, wtorne,  covX, covO, [m0, mx, my, RMSx, RMSy, msrvx, msrvy, min(vx), max(vx), min(vy), max(vy)]
 
@@ -121,7 +124,8 @@ def par_w3(P,W):
     msrvx = np.sqrt(svx/(len(vx)-1))
     msrvy = np.sqrt(svy/(len(vy)-1))
     for i, p in enumerate(P):
-        tmp = Point(p.nr, p.x, p.y, Xx[i], Xy[i], vx[i], vy[i])
+        w = szukaj(p.nr, W)
+        tmp = Point(p.nr, p.x, p.y, w.x, w.y, Xx[i], Xy[i], vx[i], vy[i])
         wtorne.append(tmp)
 
     return dX, wtorne,  covX, covO, [m0, mx, my, RMSx, RMSy, msrvx, msrvy, min(vx), max(vx), min(vy), max(vy)]
@@ -176,7 +180,8 @@ def par_af(P,W):
     msrvx = np.sqrt(svx/(len(vx)-1))
     msrvy = np.sqrt(svy/(len(vy)-1))
     for i, p in enumerate(P):
-        tmp = Point(p.nr, p.x, p.y, Xx[i], Xy[i], vx[i], vy[i])
+        w = szukaj(p.nr, W)
+        tmp = Point(p.nr, p.x, p.y, w.x, w.y, Xx[i], Xy[i], vx[i], vy[i])
         wtorne.append(tmp)
     return dX, wtorne,  covX, covO, [m0, mx, my, RMSx, RMSy, msrvx, msrvy, min(vx), max(vx), min(vy), max(vy)]
 
@@ -210,30 +215,64 @@ def rap_af(sciezka, dok,jed_pier,jed_wto,W,pa,cov,bl, teraz):
     pl.write('Wykonali:\ninż. Damian Ozga\ninż. Kamil Olko\n')
     pl.write('{:^78}\n'.format('AGH 2020'))
     pl.write('<>' * 39)
+
+    #Zapisanie punktów dostosowania
     pl.write('\n')
     pl.write('*'*79)
     pl.write('\n{:^79s}\n'.format('PUNKTY DOSTOSOWANIE'))
     pl.write('*' * 79)
     pl.write('\n\n')
-    pl.write('{:<7s}{:<13s}{:<13s}{:<13s}{:<13s}{:<10s}{:<9s}\n'.format('Nr','X_pier'+ jed_pier,'Y_pier'+jed_pier,
-                                                                           'X_wt'+jed_wto,'Y_wt'+jed_wto,
-                                                                           'Vx'+jed_wto,'Vy'+jed_wto))
+    pl.write('{:<7s}{:<13s}{:<13s}{:<13s}{:<13s}{:<10s}{:<9s}\n'.format('Nr', 'X_pier' + jed_pier, 'Y_pier' + jed_pier,
+                                                                        'X_wt' + jed_wto, 'Y_wt' + jed_wto,
+                                                                        'Vx' + jed_wto, 'Vy' + jed_wto))
     for i in W:
         if dok == 0:
-            pl.write('{:<7s}{:<13.0f}{:<13.0f}{:<13.0f}{:<13.0f}'.format(i.nr, i.x, i.y, i.xw, i.yw))
-            pl.write('{:<10.1f}{:<9.1f}\n'.format(i.vx, i.vy))
+            pl.write('{:<7s}{:<13.0f}{:<13.0f}{:<13.0f}{:<13.0f}'.format(i.nr, i.x, i.y, i.xx, i.yy))
+            
         if dok == 1:
-            pl.write('{:<7s}{:<13.1f}{:<13.1f}{:<13.1f}{:<13.1f}'.format(i.nr, i.x, i.y, i.xw, i.yw))
+            pl.write('{:<7s}{:<13.1f}{:<13.1f}{:<13.1f}{:<13.1f}'.format(i.nr, i.x, i.y, i.xx, i.yy))
             pl.write('{:<10.2f}{:<9.2f}\n'.format(i.vx, i.vy))
         if dok == 2:
-            pl.write('{:<7s}{:<13.2f}{:<13.2f}{:<13.2f}{:<13.2f}'.format(i.nr, i.x, i.y, i.xw, i.yw))
+            pl.write('{:<7s}{:<13.2f}{:<13.2f}{:<13.2f}{:<13.2f}'.format(i.nr, i.x, i.y, i.xx, i.yy))
             pl.write('{:<10.3f}{:<9.3f}\n'.format(i.vx, i.vy))
         if dok == 3:
-            pl.write('{:<7s}{:<13.3f}{:<13.3f}{:<13.3f}{:<13.3f}'.format(i.nr, i.x, i.y, i.xw, i.yw))
+            pl.write('{:<7s}{:<13.3f}{:<13.3f}{:<13.3f}{:<13.3f}'.format(i.nr, i.x, i.y, i.xx, i.yy))
             pl.write('{:<10.4f}{:<9.4f}\n'.format(i.vx, i.vy))
         if dok == 4:
-            pl.write('{:<7s}{:<13.4f}{:<13.4f}{:<13.4f}{:<13.4f}'.format(i.nr, i.x, i.y, i.xw, i.yw))
+            pl.write('{:<7s}{:<13.4f}{:<13.4f}{:<13.4f}{:<13.4f}'.format(i.nr, i.x, i.y, i.xx, i.yy))
             pl.write('{:<10.5f}{:<9.5f}\n'.format(i.vx, i.vy))
+
+    #Zapisanie punktów transformowanych
+
+    pl.write('\n')
+    pl.write('*' * 79)
+    pl.write('\n{:^79s}\n{:^79s}\n'.format('PORÓWNANIE WSPÓŁRZĘDNYCH PUNKTÓW DOSTOSOWANIA',
+                        'PO PRZEPROWADZONYM PROCESIE TRANSFORMACJI'))
+    pl.write('*' * 79)
+    pl.write('\n\n')
+    pl.write('{:<7s}{:<13s}{:<13s}{:<13s}{:<13s}{:<10s}{:<9s}\n'.format('Nr', 'X_wt' + jed_wto, 'Y_wt' + jed_wto,
+                                                                        'X_wt_tr' + jed_wto, 'Y_wt_tr' + jed_wto,
+                                                                        'Vx' + jed_wto, 'Vy' + jed_wto))
+    for i in W:
+        if dok == 0:
+            pl.write('{:<7s}{:<13.0f}{:<13.0f}{:<13.0f}{:<13.0f}'.format(i.nr, i.xx, i.yy, i.xw, i.yw))
+            pl.write('{:<10.1f}{:<9.1f}\n'.format(i.vx, i.vy))
+        if dok == 1:
+            pl.write('{:<7s}{:<13.1f}{:<13.1f}{:<13.1f}{:<13.1f}'.format(i.nr, i.xx, i.yy, i.xw, i.yw))
+            pl.write('{:<10.2f}{:<9.2f}\n'.format(i.vx, i.vy))
+        if dok == 2:
+            pl.write('{:<7s}{:<13.2f}{:<13.2f}{:<13.2f}{:<13.2f}'.format(i.nr, i.xx, i.yy, i.xw, i.yw))
+            pl.write('{:<10.3f}{:<9.3f}\n'.format(i.vx, i.vy))
+        if dok == 3:
+            pl.write('{:<7s}{:<13.3f}{:<13.3f}{:<13.3f}{:<13.3f}'.format(i.nr, i.xx, i.yy, i.xw, i.yw))
+            pl.write('{:<10.4f}{:<9.4f}\n'.format(i.vx, i.vy))
+        if dok == 4:
+            pl.write('{:<7s}{:<13.4f}{:<13.4f}{:<13.4f}{:<13.4f}'.format(i.nr, i.xx, i.yy, i.xw, i.yw))
+            pl.write('{:<10.5f}{:<9.5f}\n'.format(i.vx, i.vy))
+    
+    
+    
+    #Zapisanie parametrów transformacji
     pl.write('\n')
     pl.write('*'*79)
     pl.write('\n{:^79s}\n'.format('PARAMETRY TRANSFORMACJI'))
@@ -315,30 +354,63 @@ def rap_w2(sciezka, dok,jed_pier,jed_wto,W,pa,cov,bl, teraz):
         pl.write('Wykonali:\ninż. Damian Ozga\ninż. Kamil Olko\n')
         pl.write('{:^78}\n'.format('AGH 2020'))
         pl.write('<>' * 39)
+
+        # Zapisanie punktów dostosowania
         pl.write('\n')
-        pl.write('*'*79)
+        pl.write('*' * 79)
         pl.write('\n{:^79s}\n'.format('PUNKTY DOSTOSOWANIE'))
         pl.write('*' * 79)
         pl.write('\n\n')
-        pl.write('{:<7s}{:<13s}{:<13s}{:<13s}{:<13s}{:<10s}{:<9s}\n'.format('Nr','X_pier'+ jed_pier,'Y_pier'+jed_pier,
-                                                                               'X_wt'+jed_wto,'Y_wt'+jed_wto,
-                                                                               'Vx'+jed_wto,'Vy'+jed_wto))
+        pl.write(
+            '{:<7s}{:<13s}{:<13s}{:<13s}{:<13s}{:<10s}{:<9s}\n'.format('Nr', 'X_pier' + jed_pier, 'Y_pier' + jed_pier,
+                                                                       'X_wt' + jed_wto, 'Y_wt' + jed_wto,
+                                                                       'Vx' + jed_wto, 'Vy' + jed_wto))
         for i in W:
             if dok == 0:
-                pl.write('{:<7s}{:<13.0f}{:<13.0f}{:<13.0f}{:<13.0f}'.format(i.nr, i.x, i.y, i.xw, i.yw))
-                pl.write('{:<10.1f}{:<9.1f}\n'.format(i.vx, i.vy))
+                pl.write('{:<7s}{:<13.0f}{:<13.0f}{:<13.0f}{:<13.0f}'.format(i.nr, i.x, i.y, i.xx, i.yy))
+
             if dok == 1:
-                pl.write('{:<7s}{:<13.1f}{:<13.1f}{:<13.1f}{:<13.1f}'.format(i.nr, i.x, i.y, i.xw, i.yw))
+                pl.write('{:<7s}{:<13.1f}{:<13.1f}{:<13.1f}{:<13.1f}'.format(i.nr, i.x, i.y, i.xx, i.yy))
                 pl.write('{:<10.2f}{:<9.2f}\n'.format(i.vx, i.vy))
             if dok == 2:
-                pl.write('{:<7s}{:<13.2f}{:<13.2f}{:<13.2f}{:<13.2f}'.format(i.nr, i.x, i.y, i.xw, i.yw))
+                pl.write('{:<7s}{:<13.2f}{:<13.2f}{:<13.2f}{:<13.2f}'.format(i.nr, i.x, i.y, i.xx, i.yy))
                 pl.write('{:<10.3f}{:<9.3f}\n'.format(i.vx, i.vy))
             if dok == 3:
-                pl.write('{:<7s}{:<13.3f}{:<13.3f}{:<13.3f}{:<13.3f}'.format(i.nr, i.x, i.y, i.xw, i.yw))
+                pl.write('{:<7s}{:<13.3f}{:<13.3f}{:<13.3f}{:<13.3f}'.format(i.nr, i.x, i.y, i.xx, i.yy))
                 pl.write('{:<10.4f}{:<9.4f}\n'.format(i.vx, i.vy))
             if dok == 4:
-                pl.write('{:<7s}{:<13.4f}{:<13.4f}{:<13.4f}{:<13.4f}'.format(i.nr, i.x, i.y, i.xw, i.yw))
+                pl.write('{:<7s}{:<13.4f}{:<13.4f}{:<13.4f}{:<13.4f}'.format(i.nr, i.x, i.y, i.xx, i.yy))
                 pl.write('{:<10.5f}{:<9.5f}\n'.format(i.vx, i.vy))
+
+        # Zapisanie punktów transformowanych
+
+        pl.write('\n')
+        pl.write('*' * 79)
+        pl.write('\n{:^79s}\n{:^79s}\n'.format('PORÓWNANIE WSPÓŁRZĘDNYCH PUNKTÓW DOSTOSOWANIA',
+                                               'PO PRZEPROWADZONYM PROCESIE TRANSFORMACJI'))
+        pl.write('*' * 79)
+        pl.write('\n\n')
+        pl.write('{:<7s}{:<13s}{:<13s}{:<13s}{:<13s}{:<10s}{:<9s}\n'.format('Nr', 'X_wt' + jed_wto, 'Y_wt' + jed_wto,
+                                                                            'X_wt_tr' + jed_wto, 'Y_wt_tr' + jed_wto,
+                                                                            'Vx' + jed_wto, 'Vy' + jed_wto))
+        for i in W:
+            if dok == 0:
+                pl.write('{:<7s}{:<13.0f}{:<13.0f}{:<13.0f}{:<13.0f}'.format(i.nr, i.xx, i.yy, i.xw, i.yw))
+                pl.write('{:<10.1f}{:<9.1f}\n'.format(i.vx, i.vy))
+            if dok == 1:
+                pl.write('{:<7s}{:<13.1f}{:<13.1f}{:<13.1f}{:<13.1f}'.format(i.nr, i.xx, i.yy, i.xw, i.yw))
+                pl.write('{:<10.2f}{:<9.2f}\n'.format(i.vx, i.vy))
+            if dok == 2:
+                pl.write('{:<7s}{:<13.2f}{:<13.2f}{:<13.2f}{:<13.2f}'.format(i.nr, i.xx, i.yy, i.xw, i.yw))
+                pl.write('{:<10.3f}{:<9.3f}\n'.format(i.vx, i.vy))
+            if dok == 3:
+                pl.write('{:<7s}{:<13.3f}{:<13.3f}{:<13.3f}{:<13.3f}'.format(i.nr, i.xx, i.yy, i.xw, i.yw))
+                pl.write('{:<10.4f}{:<9.4f}\n'.format(i.vx, i.vy))
+            if dok == 4:
+                pl.write('{:<7s}{:<13.4f}{:<13.4f}{:<13.4f}{:<13.4f}'.format(i.nr, i.xx, i.yy, i.xw, i.yw))
+                pl.write('{:<10.5f}{:<9.5f}\n'.format(i.vx, i.vy))
+
+        #Zapisanie parametrów transformacji
         pl.write('\n')
         pl.write('*'*79)
         pl.write('\n{:^79s}\n'.format('PARAMETRY TRANSFORMACJI'))
@@ -429,30 +501,63 @@ def rap_w3(sciezka, dok,jed_pier,jed_wto,W,pa,cov,bl, teraz):
         pl.write('Wykonali:\ninż. Damian Ozga\ninż. Kamil Olko\n')
         pl.write('{:^78}\n'.format('AGH 2020'))
         pl.write('<>' * 39)
+
+        # Zapisanie punktów dostosowania
         pl.write('\n')
-        pl.write('*'*79)
+        pl.write('*' * 79)
         pl.write('\n{:^79s}\n'.format('PUNKTY DOSTOSOWANIE'))
         pl.write('*' * 79)
         pl.write('\n\n')
-        pl.write('{:<7s}{:<13s}{:<13s}{:<13s}{:<13s}{:<10s}{:<9s}\n'.format('Nr','X_pier'+ jed_pier,'Y_pier'+jed_pier,
-                                                                               'X_wt'+jed_wto,'Y_wt'+jed_wto,
-                                                                               'Vx'+jed_wto,'Vy'+jed_wto))
+        pl.write(
+            '{:<7s}{:<13s}{:<13s}{:<13s}{:<13s}{:<10s}{:<9s}\n'.format('Nr', 'X_pier' + jed_pier, 'Y_pier' + jed_pier,
+                                                                       'X_wt' + jed_wto, 'Y_wt' + jed_wto,
+                                                                       'Vx' + jed_wto, 'Vy' + jed_wto))
         for i in W:
             if dok == 0:
-                pl.write('{:<7s}{:<13.0f}{:<13.0f}{:<13.0f}{:<13.0f}'.format(i.nr, i.x, i.y, i.xw, i.yw))
-                pl.write('{:<10.1f}{:<9.1f}\n'.format(i.vx, i.vy))
+                pl.write('{:<7s}{:<13.0f}{:<13.0f}{:<13.0f}{:<13.0f}'.format(i.nr, i.x, i.y, i.xx, i.yy))
+
             if dok == 1:
-                pl.write('{:<7s}{:<13.1f}{:<13.1f}{:<13.1f}{:<13.1f}'.format(i.nr, i.x, i.y, i.xw, i.yw))
+                pl.write('{:<7s}{:<13.1f}{:<13.1f}{:<13.1f}{:<13.1f}'.format(i.nr, i.x, i.y, i.xx, i.yy))
                 pl.write('{:<10.2f}{:<9.2f}\n'.format(i.vx, i.vy))
             if dok == 2:
-                pl.write('{:<7s}{:<13.2f}{:<13.2f}{:<13.2f}{:<13.2f}'.format(i.nr, i.x, i.y, i.xw, i.yw))
+                pl.write('{:<7s}{:<13.2f}{:<13.2f}{:<13.2f}{:<13.2f}'.format(i.nr, i.x, i.y, i.xx, i.yy))
                 pl.write('{:<10.3f}{:<9.3f}\n'.format(i.vx, i.vy))
             if dok == 3:
-                pl.write('{:<7s}{:<13.3f}{:<13.3f}{:<13.3f}{:<13.3f}'.format(i.nr, i.x, i.y, i.xw, i.yw))
+                pl.write('{:<7s}{:<13.3f}{:<13.3f}{:<13.3f}{:<13.3f}'.format(i.nr, i.x, i.y, i.xx, i.yy))
                 pl.write('{:<10.4f}{:<9.4f}\n'.format(i.vx, i.vy))
             if dok == 4:
-                pl.write('{:<7s}{:<13.4f}{:<13.4f}{:<13.4f}{:<13.4f}'.format(i.nr, i.x, i.y, i.xw, i.yw))
+                pl.write('{:<7s}{:<13.4f}{:<13.4f}{:<13.4f}{:<13.4f}'.format(i.nr, i.x, i.y, i.xx, i.yy))
                 pl.write('{:<10.5f}{:<9.5f}\n'.format(i.vx, i.vy))
+
+        # Zapisanie punktów transformowanych
+
+        pl.write('\n')
+        pl.write('*' * 79)
+        pl.write('\n{:^79s}\n{:^79s}\n'.format('PORÓWNANIE WSPÓŁRZĘDNYCH PUNKTÓW DOSTOSOWANIA',
+                                               'PO PRZEPROWADZONYM PROCESIE TRANSFORMACJI'))
+        pl.write('*' * 79)
+        pl.write('\n\n')
+        pl.write('{:<7s}{:<13s}{:<13s}{:<13s}{:<13s}{:<10s}{:<9s}\n'.format('Nr', 'X_wt' + jed_wto, 'Y_wt' + jed_wto,
+                                                                            'X_wt_tr' + jed_wto, 'Y_wt_tr' + jed_wto,
+                                                                            'Vx' + jed_wto, 'Vy' + jed_wto))
+        for i in W:
+            if dok == 0:
+                pl.write('{:<7s}{:<13.0f}{:<13.0f}{:<13.0f}{:<13.0f}'.format(i.nr, i.xx, i.yy, i.xw, i.yw))
+                pl.write('{:<10.1f}{:<9.1f}\n'.format(i.vx, i.vy))
+            if dok == 1:
+                pl.write('{:<7s}{:<13.1f}{:<13.1f}{:<13.1f}{:<13.1f}'.format(i.nr, i.xx, i.yy, i.xw, i.yw))
+                pl.write('{:<10.2f}{:<9.2f}\n'.format(i.vx, i.vy))
+            if dok == 2:
+                pl.write('{:<7s}{:<13.2f}{:<13.2f}{:<13.2f}{:<13.2f}'.format(i.nr, i.xx, i.yy, i.xw, i.yw))
+                pl.write('{:<10.3f}{:<9.3f}\n'.format(i.vx, i.vy))
+            if dok == 3:
+                pl.write('{:<7s}{:<13.3f}{:<13.3f}{:<13.3f}{:<13.3f}'.format(i.nr, i.xx, i.yy, i.xw, i.yw))
+                pl.write('{:<10.4f}{:<9.4f}\n'.format(i.vx, i.vy))
+            if dok == 4:
+                pl.write('{:<7s}{:<13.4f}{:<13.4f}{:<13.4f}{:<13.4f}'.format(i.nr, i.xx, i.yy, i.xw, i.yw))
+                pl.write('{:<10.5f}{:<9.5f}\n'.format(i.vx, i.vy))
+
+        #Zapisanie parametrów transformacji
         pl.write('\n')
         pl.write('*'*79)
         pl.write('\n{:^79s}\n'.format('PARAMETRY TRANSFORMACJI'))

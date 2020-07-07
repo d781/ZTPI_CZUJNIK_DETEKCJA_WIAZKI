@@ -5,7 +5,7 @@ import datetime
 
 if __name__ == '__main__':
     jed_pier = '[pix]'
-    jed_wto = '[mx]'
+    jed_wto = '[mm]'
     P = wczytaj('P.txt')
     W = wczytaj('W.txt')
     teraz = datetime.datetime.now()
